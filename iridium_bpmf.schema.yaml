@@ -17,7 +17,6 @@ schema:
 switches:
   - name: ascii_mode
     states: [ '中文', '英數' ]
-    reset: 1
   - name: full_shape
     states: [ '半形', '全形' ]
   - options: [ 'zh_hant_tw', 'zh_hans' ]
@@ -54,7 +53,7 @@ menu:
 
 speller:
   alphabet: '1qaz2wsxedcrfv5tgbyhnujm8ik,9ol.0p;/- 6347'
-  # workaround for not accidentially selecting chars by num keys
+    # workaround for not accidentially selecting chars by num keys
   initials: '1qaz2wsxedcrfv5tgbyhnujm8ik,9ol.0p;/-6347'
   finals: ' 6347'
   delimiter: '|'
@@ -209,10 +208,14 @@ key_binder:
     # override global binding
     # - { when: has_menu, accept: equal, send: Down }
     - { when: has_menu, accept: equal, send: equal }
-
+    # Swap UpDownLeftRight
+    - { when: composing, accept: Left, send: Up}
+    - { when: composing, accept: Right, send: Down}
+    - { when: composing, accept: Up, send: Page_Up}
+    - { when: composing, accept: Down, send: Page_Down}
     # buffer navigation keys
-    - { when: composing, accept: bracketleft, send: Left }
-    - { when: composing, accept: bracketright, send: Right }
+    - { when: composing, accept: bracketleft, send: Up }
+    - { when: composing, accept: bracketright, send: Down }
 
     # directly choose menu item by `Shift+n`, you can turn on as many as
     # the number of candidates there are
@@ -229,6 +232,7 @@ key_binder:
     # swap behavior when taking steps back
     - { when: has_menu, accept: Shift+BackSpace, send: BackSpace }
     - { when: has_menu, accept: BackSpace,       send: Control+BackSpace }
+    - { accept: "Control+space", select: colemak, when: always}
 
 recognizer:
   patterns:
@@ -241,10 +245,11 @@ ascii_composer:
   switch_key:
     # swap the behavior of left and right shift
     # compared to the original binding
-    Shift_L: commit_text
-    Shift_R: inline_ascii
+    #Shift_L: commit_text
+    Shift_R: commit_text
     Control_L: noop
     Control_R: noop
     # disable the (annoying) behavior to clear buffer with Caps lock
     Caps_Lock: noop
     Eisu_toggle: clear
+    
